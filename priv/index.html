@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8"/>
+	<title>Cursak</title>
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/site.webmanifest">
+</head>
+
+<body>
+
+<header>
+	<h1>Cursak</h1>
+	<div id="status"></div>
+</header>
+
+<nav>
+	<div id="connecting">
+		<input type='text' id="server" value=""></input>
+		<button type="button" onclick="toggle_connection()">connection</button>
+	</div>
+
+	<div id="connected">
+		<input type='text' id="message" value=""></input>
+		<button type="button" onclick="sendTxt();">send</button>
+	</div>
+</nav>
+<style>
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+th, td {
+  padding: 5px;
+  text-align: center;    
+}
+</style>
+
+<fieldset>
+	<legend>
+		Block size
+	</legend>
+	<div>
+		<input type="radio" id="b64" name="b64" value="64" onclick="radioClick(this);" checked />
+    		<label for="b64">64 bytes</label>
+		<input type="radio" id="b256" name="b256" value="256"  onclick="radioClick(this);" />
+    			<label for="b256">256 bytes</label>
+		<input type="radio" id="b1024" name="b1024" value="1024"  onclick="radioClick(this);" />
+    			<label for="b1024">1024 bytes</label>
+		<input type="radio" id="b4096" name="b4096" value="4096"  onclick="radioClick(this);" />
+    			<label for="b4096">4096 bytes</label>
+		<input type="radio" id="b16384" name="b16384" value="16384"  onclick="radioClick(this);" />
+    			<label for="b16384">16384 bytes</label>
+		<input type="radio" id="b32768" name="b32768" value="32768"  onclick="radioClick(this);" />
+    			<label for="b32768">32768 bytes</label>
+		<input type="radio" id="b49152" name="b49152" value="49152"  onclick="radioClick(this);" />
+    			<label for="b49152">49152 bytes</label>
+		<input type="radio" id="b65536" name="b65536" value="65536"  onclick="radioClick(this);" />
+    			<label for="b65536">65536 bytes</label>
+
+	</div>
+</fieldset>
+
+
+<p>   </p>
+<table  style="width:100%;">
+	<thead>
+	<tr><th colspan="15">postgresql</th></tr> <!--<th colspan="16">mysql</th></tr>-->
+	</thead>
+	<tbody>
+	<tr><td colspan="9">no poolboy</td><td colspan="6">poolboy</td><!--<td>nopool</td><td>pool</td></tr>-->
+	<tr><td colspan="3">epgsql</td><td colspan="3">odbc no pool</td><td colspan="3">odbc with pool</td><td colspan="3">epgsql</td><td colspan="3">odbc</td></tr>
+	<tr><td style="width:50px">stream</td><td>duration</td><td></td>
+		<td style="width:50px">stream</td><td>duration</td><td></td>
+		<td style="width:50px">stream</td><td>duration</td><td></td>
+		<td style="width:50px">stream</td><td>duration</td><td></td>
+		<td style="width:50px">stream</td><td>duration</td><td></td>
+	</tr>
+
+	<tr><td style="width:50px">1</td>
+		<td><input type='text' id="pg_nopool_epgsql1" value="" style="width:100px"></input></td>
+		<!--<td><input type='text' id="pg_nopool_epgsqlavg" value="" style="width:50px"></input></td>-->
+		<td><button type="button" 
+			onclick="runChaine('run', 'postgres', false, 'epgsql', Ballast);">run pg epgsql</button></td>
+
+		<td style="width:50px">1</td>
+		<td><input type='text' id="pg_nopool_odbc1" value="" style="width:100px"></input></td>
+		<!--<td><input type='text' id="pg_nopool_odbcavg" value="" style="width:50px"></input></td>-->
+		<td><button type="button" 
+			onclick="runChaine('run', 'postgres', false, 'odbc', Ballast);">run pg odbc</button></td>
+
+		<td style="width:50px">1</td>
+		<td><input type='text' id="pg_pooling_odbc1" value="" style="width:100px"></input></td>
+		<!--<td><input type='text' id="pg_nopool_odbcavg" value="" style="width:50px"></input></td>-->
+		<td><button type="button" 
+			onclick="runChaine('run', 'postgres', false, 'odbc_pooling', Ballast);">run pg-pool odbc</button></td>
+
+		<td style="width:50px">1</td>
+		<td><input type='text' id="pg_pool_epgsql1" value="" style="width:100px"></input></td>
+		<!--<td><input type='text' id="pg_pool_epgsqlavg" value="" style="width:50px"></input></td>-->
+		<td><button type="button"
+			onclick="runChaine('run', 'postgres', true, 'epgsql', Ballast);">run pool pg epgsql</button></td>
+		<td style="width:50px">1</td>
+		<td><input type='text' id="pg_pool_odbc1" value="" style="width:100px"></input></td>
+		<!--<td><input type='text' id="pg_pool_odbcavg" value="" style="width:50px"></input></td>-->
+		<td><button type="button"
+			onclick="runChaine('run', 'postgres', true, 'odbc', Ballast);">run pool pg odbc</button></td>
+	</tr>
+	<tr><td style="width:50px">2</td>
+		<td><input type='text' id="pg_nopool_epgsql2" value="" style="width:100px"></input></td>
+		<td></td>
+		<!--<td></td>-->
+		<td style="width:50px">2</td>
+		<td><input type='text' id="pg_nopool_odbc2" value="" style="width:100px"></input></td>
+		<td></td>
+		<td style="width:50px">2</td>
+		<td><input type='text' id="pg_pooling_odbc2" value="" style="width:100px"></input></td>
+		<td></td>
+		<!--<td></td>-->
+		<td style="width:50px">2</td>
+		<td><input type='text' id="pg_pool_epgsql2" value="" style="width:100px"></input></td>
+		<td></td>
+		<!--<td></td>-->
+		<td style="width:50px">2</td>
+		<td><input type='text' id="pg_pool_odbc2" value="" style="width:100px"></input></td>
+		<td></td>
+		<!--<td></td>-->
+	</tr>
+	<tr><td style="width:50px">3</td>
+		<td><input type='text' id="pg_nopool_epgsql3" value="" style="width:100px"></input></td>
+		<td></td>
+		<!--<td></td>-->
+		<td style="width:50px">3</td>
+		<td><input type='text' id="pg_nopool_odbc3" value="" style="width:100px"></input></td>
+		<td></td>
+		<td style="width:50px">3</td>
+		<td><input type='text' id="pg_pooling_odbc3" value="" style="width:100px"></input></td>
+		<td></td>
+		<!--<td></td>-->
+		<td style="width:50px">3</td>
+		<td><input type='text' id="pg_pool_epgsql3" value="" style="width:100px"></input></td>
+		<td></td>
+		<!--<td></td>-->
+		<td style="width:50px">3</td>
+		<td><input type='text' id="pg_pool_odbc3" value="" style="width:100px"></input></td>
+		<td></td>
+		<!--<td></td>-->
+	</tr>
+	<tr><td style="width:50px">4</td>
+		<td><input type='text' id="pg_nopool_epgsql4" value="" style="width:100px"></input></td>
+		<td></td>
+		<!--<td></td>-->
+		<td style="width:50px">4</td>
+		<td><input type='text' id="pg_nopool_odbc4" value="" style="width:100px"></input></td>
+		<td></td>
+		<td style="width:50px">4</td>
+		<td><input type='text' id="pg_pooling_odbc4" value="" style="width:100px"></input></td>
+		<td></td>
+		<!--<td></td>-->
+		<td style="width:50px">4</td>
+		<td><input type='text' id="pg_pool_epgsql4" value="" style="width:100px"></input></td>
+		<td></td>
+		<!--<td></td>-->
+		<td style="width:50px">4</td>
+		<td><input type='text' id="pg_pool_odbc4" value="" style="width:100px"></input></td>
+		<td></td>
+		<!--<td></td>-->
+	</tr>
+	<tr><td style="width:50px">5</td>
+		<td><input type='text' id="pg_nopool_epgsql5" value="" style="width:100px"></input></td>
+		<td></td>
+		<!--<td></td>-->
+		<td style="width:50px">5</td>
+		<td><input type='text' id="pg_nopool_odbc5" value="" style="width:100px"></input></td>
+		<td></td>
+		<td style="width:50px">5</td>
+		<td><input type='text' id="pg_pooling_odbc5" value="" style="width:100px"></input></td>
+		<td></td>
+		<!--<td></td>-->
+		<td style="width:50px">5</td>
+		<td><input type='text' id="pg_pool_epgsql5" value="" style="width:100px"></input></td>
+		<td></td>
+		<!--<td></td>-->
+		<td style="width:50px">5</td>
+		<td><input type='text' id="pg_pool_odbc5" value="" style="width:100px"></input></td>
+		<td></td>
+		<!--<td></td>-->
+	</tr>
+		<!--<td><button type="button" onclick="initPg();">init pg bd</button></td>
+		
+		<td><button type="button" onclick="runPgOdbc();">run pg odbc</button></td>
+		<td><button type="button" onclick="runPoolPgEpgsql();">run pg poolboy epgsql</button></td>
+		<td><button type="button" onclick="runPoolPgOdbc();">run pg poolboy odbc</button></td>
+	
+	<tr>
+		<td><button type="button" onclick="initMysql();">init mysql bd</button></td>
+		<td><button type="button" onclick="runMysqlMysql();">run mysql</button></td>
+		<td><button type="button" onclick="runMysqlOdbc();">run mysql odbc</button></td>
+		<td><button type="button" onclick="runPoolMysqlMysql();">run mysql poolboy mysql</button></td>
+		<td><button type="button" onclick="runPoolMysqlOdbc();">run mysql poolboy odbc</button></td>
+	</tr>-->
+	</tbody>
+</table>
+
+<p>   </p>
+<table  style="width:100%;">
+	<thead>
+	<tr><th colspan="15">mysql</th></tr> <!--<th colspan="16">mysql</th></tr>-->
+	</thead>
+	<tbody>
+	<tr><td colspan="9">no poolboy</td><td colspan="6">poolboy</td><!--<td>nopool</td><td>pool</td></tr>-->
+	<tr><td colspan="3">mysql</td><td colspan="3">odbc no pool</td><td colspan="3">odbc with pool</td><td colspan="3">mysql</td><td colspan="3">odbc</td></tr>
+	<tr><td style="width:50px">stream</td><td>duration</td><td></td>
+		<td style="width:50px">stream</td><td>duration</td><td></td>
+		<td style="width:50px">stream</td><td>duration</td><td></td>
+		<td style="width:50px">stream</td><td>duration</td><td></td>
+		<td style="width:50px">stream</td><td>duration</td><td></td>
+	</tr>
+
+	<tr><td style="width:50px">1</td>
+		<td><input type='text' id="my_nopool_mysql1" value="" style="width:100px"></input></td>
+		<!--<td><input type='text' id="pg_nopool_epgsqlavg" value="" style="width:50px"></input></td>-->
+		<td><button type="button" 
+			onclick="runChaine('run', 'mysql', false, 'mysql', Ballast);">run my mysql</button></td>
+
+		<td style="width:50px">1</td>
+		<td><input type='text' id="my_nopool_odbc1" value="" style="width:100px"></input></td>
+		<!--<td><input type='text' id="pg_nopool_odbcavg" value="" style="width:50px"></input></td>-->
+		<td><button type="button" 
+			onclick="runChaine('run', 'mysql', false, 'odbc', Ballast);">run my odbc</button></td>
+
+		<td style="width:50px">1</td>
+		<td><input type='text' id="my_pooling_odbc1" value="" style="width:100px"></input></td>
+		<!--<td><input type='text' id="pg_nopool_odbcavg" value="" style="width:50px"></input></td>-->
+		<td><button type="button" 
+			onclick="runChaine('run', 'mysql', false, 'odbc_pooling', Ballast);">run my-pool odbc</button></td>
+
+		<td style="width:50px">1</td>
+		<td><input type='text' id="my_pool_mysql1" value="" style="width:100px"></input></td>
+		<!--<td><input type='text' id="pg_pool_epgsqlavg" value="" style="width:50px"></input></td>-->
+		<td><button type="button"
+			onclick="runChaine('run', 'mysql', true, 'mysql', Ballast);">run pool my mysql</button></td>
+		<td style="width:50px">1</td>
+		<td><input type='text' id="my_pool_odbc1" value="" style="width:100px"></input></td>
+		<!--<td><input type='text' id="pg_pool_odbcavg" value="" style="width:50px"></input></td>-->
+		<td><button type="button"
+			onclick="runChaine('run', 'mysql', true, 'odbc', Ballast);">run pool my odbc</button></td>
+	</tr>
+	<tr><td style="width:50px">2</td>
+		<td><input type='text' id="my_nopool_mysql2" value="" style="width:100px"></input></td>
+		<td></td>
+		<!--<td></td>-->
+		<td style="width:50px">2</td>
+		<td><input type='text' id="my_nopool_odbc2" value="" style="width:100px"></input></td>
+		<td></td>
+		<td style="width:50px">2</td>
+		<td><input type='text' id="my_pooling_odbc2" value="" style="width:100px"></input></td>
+		<td></td>
+		<!--<td></td>-->
+		<td style="width:50px">2</td>
+		<td><input type='text' id="my_pool_mysql2" value="" style="width:100px"></input></td>
+		<td></td>
+		<!--<td></td>-->
+		<td style="width:50px">2</td>
+		<td><input type='text' id="my_pool_odbc2" value="" style="width:100px"></input></td>
+		<td></td>
+		<!--<td></td>-->
+	</tr>
+	<tr><td style="width:50px">3</td>
+		<td><input type='text' id="my_nopool_mysql3" value="" style="width:100px"></input></td>
+		<td></td>
+		<!--<td></td>-->
+		<td style="width:50px">3</td>
+		<td><input type='text' id="my_nopool_odbc3" value="" style="width:100px"></input></td>
+		<td></td>
+		<td style="width:50px">3</td>
+		<td><input type='text' id="my_pooling_odbc3" value="" style="width:100px"></input></td>
+		<td></td>
+		<!--<td></td>-->
+		<td style="width:50px">3</td>
+		<td><input type='text' id="my_pool_mysql3" value="" style="width:100px"></input></td>
+		<td></td>
+		<!--<td></td>-->
+		<td style="width:50px">3</td>
+		<td><input type='text' id="my_pool_odbc3" value="" style="width:100px"></input></td>
+		<td></td>
+		<!--<td></td>-->
+	</tr>
+	<tr><td style="width:50px">4</td>
+		<td><input type='text' id="my_nopool_mysql4" value="" style="width:100px"></input></td>
+		<td></td>
+		<!--<td></td>-->
+		<td style="width:50px">4</td>
+		<td><input type='text' id="my_nopool_odbc4" value="" style="width:100px"></input></td>
+		<td></td>
+		<td style="width:50px">4</td>
+		<td><input type='text' id="my_pooling_odbc4" value="" style="width:100px"></input></td>
+		<td></td>
+		<!--<td></td>-->
+		<td style="width:50px">4</td>
+		<td><input type='text' id="my_pool_mysql4" value="" style="width:100px"></input></td>
+		<td></td>
+		<!--<td></td>-->
+		<td style="width:50px">4</td>
+		<td><input type='text' id="my_pool_odbc4" value="" style="width:100px"></input></td>
+		<td></td>
+		<!--<td></td>-->
+	</tr>
+	<tr><td style="width:50px">5</td>
+		<td><input type='text' id="my_nopool_mysql5" value="" style="width:100px"></input></td>
+		<td></td>
+		<!--<td></td>-->
+		<td style="width:50px">5</td>
+		<td><input type='text' id="my_nopool_odbc5" value="" style="width:100px"></input></td>
+		<td></td>
+		<td style="width:50px">5</td>
+		<td><input type='text' id="my_pooling_odbc5" value="" style="width:100px"></input></td>
+		<td></td>
+		<!--<td></td>-->
+		<td style="width:50px">5</td>
+		<td><input type='text' id="my_pool_mysql5" value="" style="width:100px"></input></td>
+		<td></td>
+		<!--<td></td>-->
+		<td style="width:50px">5</td>
+		<td><input type='text' id="my_pool_odbc5" value="" style="width:100px"></input></td>
+		<td></td>
+		<!--<td></td>-->
+	</tr>
+	</tbody>
+</table>
+
+<main id="content">
+	<button id="clear" onclick="clearScreen()" >Clear text</button>
+	<div id="output"></div>
+</main>
+
+<script type="text/javascript">
+
+var websocket;
+var server = document.getElementById("server");
+var message = document.getElementById("message");
+var connecting = document.getElementById("connecting");
+var connected = document.getElementById("connected");
+var content = document.getElementById("content");
+var output = document.getElementById("output");
+var Ballast = generateRandomString(64);
+
+server.value = "ws://" + window.location.host + "/websocket";
+connected.style.display = "none";
+content.style.display = "none";
+
+initRadio(true);
+
+
+function connect()
+{
+	wsHost = server.value;
+	websocket = new WebSocket(wsHost);
+	showScreen('<b>Connecting to: ' +  wsHost + '</b>');
+	websocket.onopen = function(evt) { onOpen(evt) };
+	websocket.onclose = function(evt) { onClose(evt) };
+	websocket.onmessage = function(evt) { onMessage(evt) };
+	websocket.onerror = function(evt) { onError(evt) };
+};
+
+function disconnect() {
+	websocket.close();
+};
+
+function toggle_connection(){
+	if (websocket && websocket.readyState == websocket.OPEN) {
+		disconnect();
+	} else {
+		connect();
+	};
+};
+
+function sendTxt() {
+	if (websocket.readyState == websocket.OPEN) {
+		var msg = message.value;
+		websocket.send(JSON.stringify({msg: msg}));
+		showScreen('sending: ' + msg);
+	} else {
+		showScreen('websocket is not connected');
+	};
+};
+
+//function initPg() {
+//	Val = {action: "init", db: "postgres", pool: null, driver: null, date: Date.now()};
+//	sendSmth(JSON.stringify(Val));
+//};
+
+function runChaine(Action, Db, Pool, Driver, DataLoad) {
+	Val = {action: Action, db: Db, pool: Pool, driver: Driver, ballast: DataLoad};
+	sendSmth(JSON.stringify(Val));
+};
+
+
+/*function runPgEpgsql() {
+	Val = {action: "run", db: "postgres", pool: null, driver: "epgsql", date: Date.now()};
+	sendSmth(JSON.stringify(Val));
+};
+
+function runPgOdbc() {
+	Val = {action: "run", db: "postgres", pool: null, driver: "odbc", date: Date.now()};
+	sendSmth(JSON.stringify(Val));
+};
+
+function runPoolPgEpgsql() {
+	Val = {action: "run", db: "postgres", pool: true, driver: "epgsql", date: Date.now()};
+	sendSmth(JSON.stringify(Val));
+};
+
+function runPoolPgOdbc() {
+	Val = {action: "run", db: "postgres", pool: true, driver: "odbc", date: Date.now()};
+	sendSmth(JSON.stringify(Val));
+};*/
+
+//function initMysql() {
+//	Val = {action: "init", db: "mysql", pool: null, driver: null, date: Date.now()};
+//	sendSmth(JSON.stringify(Val));
+//};
+
+function runMysqlMysql() {
+	Val = {action: "run", db: "mysql", pool: null, driver: "mysql", date: Date.now()};
+	sendSmth(JSON.stringify(Val));
+};
+
+function runMysqlOdbc() {
+	Val = {action: "run", db: "mysql", pool: null, driver: "odbc", date: Date.now()};
+	sendSmth(JSON.stringify(Val));
+};
+
+function runPoolMysqlMysql() {
+	Val = {action: "run", db: "mysql", pool: true, driver: "mysql", date: Date.now()};
+	sendSmth(JSON.stringify(Val));
+};
+
+function runPoolMysqlOdbc() {
+	Val = {action: "run", db: "mysql", pool: true, driver: "odbc", date: Date.now()};
+	sendSmth(JSON.stringify(Val));
+};
+
+function sendSmth(Val) {
+	if (websocket.readyState == websocket.OPEN) {
+		//var msg = message.value;
+		websocket.send(Val);
+		showScreen('sending: ' + Val);
+	} else {
+		showScreen('websocket is not connected');
+	};
+};
+
+function onOpen(evt) {
+	showScreen('<span style="color: green;">CONNECTED </span>');
+	connecting.style.display = "none";
+	connected.style.display = "";
+	content.style.display = "";
+};
+
+function onClose(evt) {
+	showScreen('<span style="color: red;">DISCONNECTED</span>');
+};
+
+function onMessage(evt) {
+	showScreen('<span style="color: blue;">RESPONSE: ' + evt.data + '</span>');
+	//console.log(evt.data);
+	Answer = JSON.parse(evt.data);
+	showScreen('<span style="color: blue;">RESPONSE after parse: ' + JSON.stringify(Answer) + '</span>');
+	showScreen('<span style="color: blue;">RESPONSE after parse db: ' + Answer.db +' '+Answer.pool+' ' + '</span>');
+	if(Answer.db == 'pg'){
+		if(Answer.lib == 'epgsql'){
+			if(Answer.pool == false){
+				console.log('pool epgsql false \n' + Answer.stream_number);
+				switch(Answer.stream_number){
+					case 1:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("pg_nopool_epgsql1").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 2:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("pg_nopool_epgsql2").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 3:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("pg_nopool_epgsql3").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 4:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("pg_nopool_epgsql4").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 5:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("pg_nopool_epgsql5").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+
+					default: console.log('stream_number XZ\n' );
+				}
+			}else {
+				console.log('pool epgsql true\n');
+				switch(Answer.stream_number){
+					case 1:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("pg_pool_epgsql1").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 2:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("pg_pool_epgsql2").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 3:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("pg_pool_epgsql3").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 4:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("pg_pool_epgsql4").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 5:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("pg_pool_epgsql5").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+
+					default: console.log('stream_number YZ\n' );
+				};
+			}
+		}
+		else if(Answer.lib == 'odbc'){
+			if(Answer.pool == false){
+				console.log('pool pg odbc false \n' + Answer.stream_number);
+				switch(Answer.stream_number){
+					case 1:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("pg_nopool_odbc1").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 2:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("pg_nopool_odbc2").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 3:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("pg_nopool_odbc3").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 4:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("pg_nopool_odbc4").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 5:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("pg_nopool_odbc5").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+
+					default: console.log('stream_number XZ\n' );
+				}
+			}else {
+				console.log('pool pg odbc true\n');
+				switch(Answer.stream_number){
+					case 1:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("pg_pool_odbc1").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 2:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("pg_pool_odbc2").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 3:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("pg_pool_odbc3").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 4:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("pg_pool_odbc4").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 5:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("pg_pool_odbc5").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+
+					default: console.log('stream_number YZ\n' );
+				};
+			}
+		}
+
+		else if(Answer.lib == 'odbc_pooling'){
+			if(Answer.pool == false){
+				console.log('pg odbc_pooling \n' + Answer.stream_number);
+				switch(Answer.stream_number){
+					case 1:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("pg_pooling_odbc1").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 2:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("pg_pooling_odbc2").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 3:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("pg_pooling_odbc3").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 4:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("pg_pooling_odbc4").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 5:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("pg_pooling_odbc5").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+
+					default: console.log('stream_number XZ\n' );
+				}
+			}else {
+				console.log('pool pg odbc true\n');
+				switch(Answer.stream_number){
+					case 1:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("pg_pool_odbc1").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 2:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("pg_pool_odbc2").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 3:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("pg_pool_odbc3").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 4:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("pg_pool_odbc4").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 5:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("pg_pool_odbc5").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+
+					default: console.log('stream_number YZ\n' );
+				};
+			}
+		}
+
+		else{console.log('wrong 1\n');}
+	}else if(Answer.db == 'my'){
+		if(Answer.lib == 'mysql'){
+			if(Answer.pool != true){
+				console.log('pool mysql false \n' );
+				switch(Answer.stream_number){
+					case 1:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("my_nopool_mysql1").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 2:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("my_nopool_mysql2").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 3:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("my_nopool_mysql3").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 4:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("my_nopool_mysql4").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 5:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("my_nopool_mysql5").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+
+					default: console.log('stream_number mysql HZ\n' );
+				}
+			}else {
+				console.log('pool mysql true\n');
+				switch(Answer.stream_number){
+					case 1:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("my_pool_mysql1").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 2:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("my_pool_mysql2").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 3:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("my_pool_mysql3").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 4:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("my_pool_mysql4").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 5:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("my_pool_mysql5").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+
+					default: console.log('stream_number mysql pool HZ\n' );
+				};
+			}
+
+		}
+		else if(Answer.lib == 'odbc'){
+			if(Answer.pool != true){
+				console.log('pool mysql odbc false \n' );
+				switch(Answer.stream_number){
+					case 1:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("my_nopool_odbc1").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 2:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("my_nopool_odbc2").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 3:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("my_nopool_odbc3").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 4:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("my_nopool_odbc4").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 5:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("my_nopool_odbc5").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+
+					default: console.log('stream_number odbc HZ\n' );
+				}
+			}else {
+				console.log('pool mysql odbc true\n');
+				switch(Answer.stream_number){
+					case 1:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("my_pool_odbc1").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 2:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("my_pool_odbc2").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 3:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("my_pool_odbc3").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 4:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("my_pool_odbc4").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 5:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("my_pool_odbc5").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+
+					default: console.log('stream_number mysql odbc pool HZ\n' );
+				};
+			}
+
+		}
+		else if(Answer.lib == 'odbc_pooling'){
+				console.log('mysql odbc_pooling \n' );
+				switch(Answer.stream_number){
+					case 1:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("my_pooling_odbc1").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 2:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("my_pooling_odbc2").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 3:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("my_pooling_odbc3").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 4:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("my_pooling_odbc4").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+					case 5:
+						console.log('stream_number: \n' + Answer.stream_number);
+						document.getElementById("my_pooling_odbc5").value = (Answer.end_time - Answer.start_time)/1000000;
+						break;
+
+					default: console.log('stream_number odbc HZ\n' );
+				}
+
+		}
+		else{console.log('unknown lib mysql')}
+
+	}
+	else{console.log('unknown database\n');}
+	
+	
+	//{console.log('wrong 2\n');}
+/*	switch ()
+	#{
+        <<"db">> => <<"pg">>,
+        <<"lib">> => <<"epgsql">>,
+        <<"pool">> => false,
+        <<"stream_number">> => StreamNumber,
+        <<"start_time">> => StartTime,
+        <<"end_time">> => erlang:system_time()}},*/
+};
+
+function onError(evt) {
+	showScreen('<span style="color: red;">ERROR: ' + evt.data + '</span>');
+};
+
+function showScreen(html) {
+	var el = document.createElement("p");
+	el.innerHTML = html;
+	output.insertBefore(el, output.firstChild);
+};
+
+function clearScreen() {
+	output.innerHTML = "";
+};
+
+function  radioClick(elem){
+	BlockSize = elem.value;
+	initRadio();
+	console.log("block size: " + BlockSize + "\n");
+	Ballast = generateRandomString(BlockSize);
+	//console.log(Ballast+ "\n");
+	elem.checked = true;
+};
+
+function initRadio(DefaultState){
+	const b64 = document.getElementById("b64");
+	if(DefaultState == true){b64.checked = true;}
+	else{b64.checked = false;};
+	const b256 = document.getElementById("b256");
+	b256.checked = false;
+	const b1024 = document.getElementById("b1024");
+	b1024.checked = false;
+	const b4096 = document.getElementById("b4096");
+	b4096.checked = false;
+	const b16384 = document.getElementById("b16384");
+	b16384.checked = false;
+	const b32768 = document.getElementById("b32768");
+	b32768.checked = false;
+	const b49152 = document.getElementById("b49152");
+	b49152.checked = false;
+	const b65536 = document.getElementById("b65536");
+	b65536.checked = false;
+};
+
+function generateRandomString(length) {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  const charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
+
+
+</script>
+</body>
+</html> 

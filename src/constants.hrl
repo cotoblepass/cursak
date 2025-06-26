@@ -1,0 +1,2 @@
+-define(MAX_ROWS_COUNTER, 50).
+-define(MAX_THREADS_PLUS_ONE, 6).

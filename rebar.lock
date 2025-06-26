@@ -1,0 +1,35 @@
+{"1.2.0",
+[{<<"cowboy">>,
+  {git,"https://github.com/ninenines/cowboy",
+       {ref,"24d32de931a0c985ff7939077463fc8be939f0e9"}},
+  0},
+ {<<"cowlib">>,
+  {git,"https://github.com/ninenines/cowlib",
+       {ref,"d0ab49ed797e5bb48209825428d26947d74aabd5"}},
+  1},
+ {<<"epgsql">>,
+  {git,"https://github.com/epgsql/epgsql.git",
+       {ref,"7ba52768cf0ea7d084df24d4275a88eef4db13c2"}},
+  0},
+ {<<"euneus">>,{pkg,<<"euneus">>,<<"2.4.0">>},0},
+ {<<"json_polyfill">>,{pkg,<<"json_polyfill">>,<<"0.2.1">>},0},
+ {<<"mysql">>,
+  {git,"https://github.com/mysql-otp/mysql-otp",
+       {ref,"fbc26fa74498fb612fff8465fecaed2e98538bca"}},
+  0},
+ {<<"poolboy">>,
+  {git,"https://github.com/devinus/poolboy",
+       {ref,"29be47db8c2be38b18c908e43a80ebb7b9b6116b"}},
+  0},
+ {<<"ranch">>,
+  {git,"https://github.com/ninenines/ranch",
+       {ref,"10b51304b26062e0dbfd5e74824324e9a911e269"}},
+  1}]}.
+[
+{pkg_hash,[
+ {<<"euneus">>, <<"E58178FB3B2C6FE139C863C4B347574E4C599BF1B9530ED3BAE7A10E2C7F870A">>},
+ {<<"json_polyfill">>, <<"83BE1E38D84C5AF00EBC5F414A57F63FEC2663294AD1083B6B8E74FAD20FADB5">>}]},
+{pkg_hash_ext,[
+ {<<"euneus">>, <<"200EEFCE320314831AD79D77F03B109BC035E0A282B6B71FBCD3A7982804184D">>},
+ {<<"json_polyfill">>, <<"BECBC606FFB16A8B472BC60045AAD5DFCAD33EE69ACF6C42DF644C87718E4C9D">>}]}
+].

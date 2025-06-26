@@ -1,0 +1,114 @@
+{application, cursak, [
+    {description, "cursak"},
+    {vsn, "0.1.0"},
+    {registered, []},
+    {mod, {cursak_app, []}},
+    {applications, [kernel, stdlib, sasl, crypto, ssl, poolboy, cowlib, ranch, cowboy, odbc]},
+    %{modules, [pool, pool_pg_epgsql, pool_pg_odbc]},
+    {modules, []},
+    %{registered, [example]},
+    {licenses, ["Cursak-1.0"]},
+    {links, []},
+    %{env, []}
+    {env, [
+        {pg_epgsql_pool, [
+            {pg_epgsql_pool, [
+                {size, 5},
+                {max_overflow, 20}
+			], [
+                {hostname_pg, "localhost"},
+                {database_pg, "app"},
+                {username_pg, "appuser"},
+                {password_pg, "appuser"}
+            ]}
+        ]},
+        {pg_odbc_pool, [
+            {pg_odbc_pool, [
+                {size, 5},
+                {max_overflow, 20}
+			], [
+                {odbc_pg, "DSN=pg;"},
+                {odbc_pg_pool, "DSN=pg-pool;"}
+            ]}
+        ]},
+        {my_mysql_pool, [
+            {my_mysql_pool, [
+                {size, 5},
+                {max_overflow, 20}
+			], [
+                {hostname_my, "localhost"},
+                {database_my, "app"},
+                {username_my, "appuser"},
+                {password_my, "appuser"}
+            ]}
+        ]},
+        {my_odbc_pool, [
+            {my_odbc_pool, [
+                {size, 1},
+                {max_overflow, 20}
+			], [
+                {odbc_my, "DSN=my;uid=appuser;pwd=appuser"},
+                {odbc_my_pooling, "DSN=my-pool;uid=appuser;pwd=appuser"}
+            ]}
+        ]}
+    ]}
+%    {env, [
+%        {pools, [
+%            {pg_epgsql_pool, [
+%                {size, 10},
+%                {max_overflow, 20}
+%			], [
+%                {hostname_pg, "localhost"},
+%                {database_pg, "app"},
+%                {username_pg, "appuser"},
+%                {password_pg, "appuser"}
+%            ]},
+%            {pg_odbc_pool, [
+%                {size, 10},
+%                {max_overflow, 20}
+%			], [
+%                {odbc_pg, "DSN=pg;"}
+%            ]}
+        %,
+        %    {my_pool, [
+        %        {size, 10},
+        %        {max_overflow, 20}
+		%	], [
+        %        {hostname_my, "localhost"},
+        %        {database_my, "app"},
+        %        {username_my, "appuser"},
+        %        {password_my, "appuser"},
+        %        {odbc_my, "appuser"}
+        %    ]}
+
+%        ,
+%            {mysql_mysql_pool, [
+%                {size, 10},
+%                {max_overflow, 20}
+%			], [
+%                {hostname, "localhost"},
+%                {database, "app"},
+%                {username, "appuser"},
+%                {password, "appuser"}
+%            ]},
+%            {mysql_odbc_pool, [
+%                {size, 10},
+%                {max_overflow, 20}
+%			], [
+%                {hostname, "localhost"},
+%                {database, "app"},
+%                {username, "appuser"},
+%                {password, "appuser"}
+%            ]}
+            %{pool2, [
+            %    {size, 5},
+            %    {max_overflow, 10}
+			%], [
+            %    {hostname, "127.0.0.1"},
+            %    {database, "db2"},
+            %    {username, "db2"},
+            %    {password, "abc123"}
+            %]}
+%        ]}
+%    ]}
+ ]}.
